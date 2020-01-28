@@ -1,0 +1,3 @@
+{
+	"mongoConnect": "mongodb+srv://IlliaKutnik:bagdad1258@recipeapp-a0kdm.mongodb.net/test?retryWrites=true&w=majority"
+}
