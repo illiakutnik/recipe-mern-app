@@ -20,7 +20,8 @@ export default createGlobalStyle`
     box-sizing: border-box;
     --main: ${props => props.theme.colors.main};
     --whitesmoke: ${props => props.theme.colors.whitesmoke};
-    --shadow: ${props => props.theme.colors.shadow}
+    --shadow: ${props => props.theme.colors.shadow};
+    --smallShadow: ${props => props.theme.colors.smallShadow}
   }
   body {
     font-family: 'Roboto', sans-serif;

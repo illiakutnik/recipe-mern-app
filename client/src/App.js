@@ -22,6 +22,7 @@ const AppWrapper = styled.div`
 	max-width: 1000px;
 	margin: 0 auto;
 	margin-top: 100px;
+	margin-bottom: 50px;
 	box-shadow: var(--shadow);
 	border-radius: 20px;
 `

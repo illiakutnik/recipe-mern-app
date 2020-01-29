@@ -26,10 +26,10 @@ const StyledLogo = styled(Link)`
 		border-radius: 50%;
 		width: 55px;
 		color: black;
+		box-shadow: var(--smallShadow);
 	}
 	> p {
 		font-family: 'Bangers', cursive;
-		/* font-family: 'Zhi Mang Xing', cursive; */
 		letter-spacing: 3px;
 		margin-left: 10px;
 		font-size: 30px;
@@ -43,13 +43,13 @@ const AddButton = styled(Link)`
 	border-radius: 30px;
 	color: white;
 	padding: 0 5px;
+	box-shadow: var(--smallShadow);
 	> p {
 		font-weight: 700;
-		padding: 0 5px;
-		font-size: 18px;
+		padding: 0 15px 0 10px;
 	}
 `
-const Plus1 = styled(Plus)`
+const PlusStyled = styled(Plus)`
 	color: white;
 	width: 30px;
 `
@@ -62,7 +62,7 @@ const Navbar = () => {
 				<p>My Recipes</p>
 			</StyledLogo>
 			<AddButton to='/create'>
-				<Plus1 />
+				<PlusStyled />
 				<p>ADD A NEW ONE</p>
 			</AddButton>
 		</NavBar>

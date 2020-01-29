@@ -1,7 +1,73 @@
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { createRecipe } from '../actions/recipe'
-// import axios from 'axios'
+import styled from 'styled-components'
+
+import { RemoveCircleOutline } from 'styled-icons/material/RemoveCircleOutline'
+
+const Wrapper = styled.div`
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 20px;
+`
+const Form = styled.form`
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin: 10px 0;
+	width: 50%;
+`
+const TextInput = styled.input`
+	background: var(--whitesmoke);
+	padding: 5px;
+	width: 100%;
+`
+
+const DescriptionInput = styled.textarea`
+	background: var(--whitesmoke);
+	padding: 5px;
+	width: 100%;
+	height: 90px;
+`
+const Label = styled.label`
+	font-weight: 700;
+	margin: 30px 0 10px 0;
+`
+const PhotoPickButton = styled.label`
+	padding: 5px;
+	background: var(--main);
+	border-radius: 10px;
+	box-shadow: var(--smallShadow);
+`
+const Range = styled.input`
+	width: 100%;
+`
+const Button = styled.button`
+	padding: 10px;
+	margin-top: 10px;
+	background: var(--main);
+	border-radius: 10px;
+	box-shadow: var(--smallShadow);
+	border: none;
+`
+const SubmitButton = styled(Button)`
+	margin-top: 30px;
+	padding: 15px;
+	font-weight: 700;
+	font-size: 18px;
+	width: 60%;
+`
+const ListContainer = styled.div`
+	display: flex;
+	width: 100%;
+	align-items: center;
+`
+const RemoveButton = styled(RemoveCircleOutline)`
+	color: red;
+	width: 35px;
+	cursor: pointer;
+`
 
 const Create = ({ createRecipe }) => {
 	const [name, setName] = useState('')
@@ -11,6 +77,7 @@ const Create = ({ createRecipe }) => {
 	const [time, setTime] = useState(10)
 	const [ingredients, setIngredients] = useState([])
 	const [steps, setSteps] = useState([])
+	const [isSubmitting, setIsSubmitting] = useState(false)
 
 	const addIngredient = () => {
 		setIngredients([...ingredients, ''])
@@ -51,8 +118,9 @@ const Create = ({ createRecipe }) => {
 		return !hours ? `${minutes}m` : `${hours}h:${minutes}m`
 	}
 
-	const handleSubmit = e => {
+	const handleSubmit = async e => {
 		e.preventDefault()
+		setIsSubmitting(true)
 		let newRecipe = new FormData()
 		newRecipe.append('name', name)
 		newRecipe.append('description', description)
@@ -67,96 +135,106 @@ const Create = ({ createRecipe }) => {
 			'preparation',
 			steps.map(i => i.trim()).filter(i => i)
 		)
-		createRecipe(newRecipe)
+		await createRecipe(newRecipe)
+		setIsSubmitting(false)
 	}
 
 	return (
-		<div>
-			<h1>Create</h1>
-			<form
-				onSubmit={handleSubmit}
-				style={{
-					display: 'flex',
-					flexDirection: 'column',
-					alignItems: 'flex-start'
-				}}
-			>
-				<input
+		<Wrapper>
+			<h1>Create New Recipe</h1>
+			<Form onSubmit={handleSubmit}>
+				<Label>Name of your recipe</Label>
+				<TextInput
 					type='text'
+					name='name'
 					placeholder='Name'
 					value={name}
 					onChange={e => setName(e.target.value)}
+					required
 				/>
-				<input
+				<Label>Short description of your recipe</Label>
+				<DescriptionInput
 					type='text'
 					placeholder='Description'
 					value={description}
 					onChange={e => setDescription(e.target.value)}
+					required
 				/>
-				<input type='file' onChange={e => setImage(e.target.files[0])} />
-				<label>{servings}</label>
+				<Label>Photo</Label>
+				<PhotoPickButton htmlFor='file-upload'>Choose photo</PhotoPickButton>
+				<p>{image ? image.name : null}</p>
 				<input
+					type='file'
+					style={{ display: 'none' }}
+					id='file-upload'
+					onChange={e => setImage(e.target.files[0])}
+				/>
+				<Label>Servings</Label>
+				<span>{servings}</span>
+				<Range
 					type='range'
-					name='points'
 					min='0'
 					max='10'
 					value={servings}
 					onChange={e => setServings(e.target.value)}
 				/>
-				<label>{timeFormat(time)}</label>
-				<input
+				<Label>Time</Label>
+				<span>{timeFormat(time)}</span>
+				<Range
 					type='range'
-					name='points'
 					step='10'
 					min='0'
 					max='360'
 					value={time}
 					onChange={e => setTime(e.target.value)}
 				/>
-				<label>Ingredients</label>
+				<Label>Ingredients</Label>
 				{ingredients.map((ingredient, index) => {
 					return (
-						<div key={index}>
-							<h3>{index + 1}</h3>
-							<input
+						<ListContainer key={index}>
+							<h3>{index + 1})</h3>
+							<TextInput
+								style={{ margin: '0 10px' }}
 								type='text'
 								value={ingredient}
 								onChange={e => handleChangeIngredient(e.target.value, index)}
 							/>
-							<button
+							<RemoveButton
 								onClick={() => handleRemoveIngredient(index)}
 								type='button'
-							>
-								Remove
-							</button>
-						</div>
+							></RemoveButton>
+						</ListContainer>
 					)
 				})}
-				<button type='button' onClick={addIngredient}>
+				<Button type='button' onClick={addIngredient}>
 					Add another ingredient
-				</button>
-				<label>Preparation steps</label>
+				</Button>
+				<Label>Preparation steps</Label>
 				{steps.map((step, index) => {
 					return (
-						<div key={index}>
-							<h3>{index + 1}</h3>
-							<input
+						<ListContainer key={index}>
+							<h3>{`Step: ${index + 1}`}</h3>
+							<DescriptionInput
 								type='text'
+								style={{ margin: '0 10px', width: '70%' }}
 								value={step}
 								onChange={e => handleChangeStep(e.target.value, index)}
 							/>
-							<button onClick={() => handleRemoveStep(index)} type='button'>
-								Remove
-							</button>
-						</div>
+							<RemoveButton
+								onClick={() => handleRemoveStep(index)}
+								type='button'
+							></RemoveButton>
+						</ListContainer>
 					)
 				})}
-				<button type='button' onClick={addStep}>
+				<Button type='button' onClick={addStep}>
 					Add another step
-				</button>
-				<button type='submit'>Add</button>
-			</form>
-		</div>
+				</Button>
+				<SubmitButton type='submit' disabled={isSubmitting}>
+					{isSubmitting ? 'Saving...' : 'Save new recipe'}
+				</SubmitButton>
+			</Form>
+		</Wrapper>
 	)
 }
 
