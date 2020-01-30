@@ -11,6 +11,7 @@ import Create from './components/create'
 import Edit from './components/edit'
 import Navbar from './components/Navbar/Navbar'
 import List from './components/List/List'
+import RecipePage from './components/RecipePage'
 
 const AppBackground = styled.div`
 	background: var(--main);
@@ -38,6 +39,7 @@ const App = () => {
 								<Navbar />
 								<Switch>
 									<Route exact path='/' component={List} />
+									<Route exact path='/recipe/:id' component={RecipePage} />
 									<Route exact path='/create' component={Create} />
 									<Route exact path='/edit' component={Edit} />
 								</Switch>

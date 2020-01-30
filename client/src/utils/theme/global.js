@@ -36,4 +36,7 @@ export default createGlobalStyle`
     text-decoration: none;
     font-family: inherit;
   }
+  ul {
+    list-style: none
+  }
 `

@@ -57,6 +57,7 @@ const SubmitButton = styled(Button)`
 	font-weight: 700;
 	font-size: 18px;
 	width: 60%;
+	color: white;
 `
 const ListContainer = styled.div`
 	display: flex;

@@ -3,7 +3,9 @@ import {
 	CREATE_RECIPE,
 	CREATE_RECIPE_FAIL,
 	GET_ALL_RECIPES,
-	GET_ALL_RECIPES_FAIL
+	GET_ALL_RECIPES_FAIL,
+	GET_RECIPE,
+	GET_RECIPE_FAIL
 } from './types'
 
 export const createRecipe = formData => async dispatch => {
@@ -30,6 +32,21 @@ export const getAllRecipes = () => async dispatch => {
 	} catch (err) {
 		dispatch({
 			type: GET_ALL_RECIPES_FAIL,
+			payload: err.message
+		})
+	}
+}
+
+export const getRecipe = id => async dispatch => {
+	try {
+		const res = await axios.get(`/recipe?id=${id}`)
+		dispatch({
+			type: GET_RECIPE,
+			payload: res.data
+		})
+	} catch (err) {
+		dispatch({
+			type: GET_RECIPE_FAIL,
 			payload: err.message
 		})
 	}

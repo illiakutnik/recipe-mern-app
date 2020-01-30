@@ -1,7 +1,16 @@
 import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
 import { getAllRecipes } from '../../actions/recipe'
+import styled from 'styled-components'
 import ListItem from './ListItem'
+
+const StyledList = styled.div`
+	display: flex;
+	justify-content: space-around;
+	width: 100%;
+	flex-wrap: wrap;
+	padding: 15px;
+`
 
 const List = ({ recipes, loading, error, getAllRecipes }) => {
 	useEffect(() => {
@@ -9,24 +18,24 @@ const List = ({ recipes, loading, error, getAllRecipes }) => {
 	}, [])
 
 	return (
-		<div>
-			<h1>List</h1>
+		<>
+			{/* <h1>List</h1> */}
 			{loading ? (
 				<h2>Loading...</h2>
 			) : (
-				<div>
+				<StyledList>
 					{recipes.length > 0 ? (
-						<div>
+						<>
 							{recipes.map(recipe => {
 								return <ListItem key={recipe._id} recipe={recipe} />
 							})}
-						</div>
+						</>
 					) : (
 						<h2>no recipes yet</h2>
 					)}
-				</div>
+				</StyledList>
 			)}
-		</div>
+		</>
 	)
 }
 

@@ -44,6 +44,10 @@ const AddButton = styled(Link)`
 	color: white;
 	padding: 0 5px;
 	box-shadow: var(--smallShadow);
+	transition: all 0.2s;
+	&:hover {
+		transform: scale(1.05);
+	}
 	> p {
 		font-weight: 700;
 		padding: 0 15px 0 10px;
