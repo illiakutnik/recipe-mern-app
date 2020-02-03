@@ -1,17 +1,19 @@
 import React from 'react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
-import { Provider } from 'react-redux'
-import store from './store'
+// import { Provider } from 'react-redux'
+// import store from './store'
 import theme from './utils/theme/theme'
 import GlobalStyles from './utils/theme/global'
 import { ThemeProvider } from 'styled-components'
 import styled from 'styled-components'
+import { useSelector } from 'react-redux'
+import { Redirect } from 'react-router-dom'
 
-import Create from './components/create'
-import Edit from './components/edit'
+import Create from './components/Create'
+import Edit from './components/Edit'
 import Navbar from './components/Navbar/Navbar'
 import List from './components/List/List'
-import RecipePage from './components/RecipePage'
+import RecipePage from './components/RecipePage/RecipePage'
 
 const AppBackground = styled.div`
 	background: var(--main);
@@ -27,29 +29,45 @@ const AppWrapper = styled.div`
 	box-shadow: var(--shadow);
 	border-radius: 20px;
 `
+// const ProtectedRoute = () => {
+// 	const { component: Component, ...props } = props
+
+// 	return (
+// 		<Route
+// 			{...props}
+// 			render={props =>
+// 				this.state.authenticated ? (
+// 					<Component {...props} />
+// 				) : (
+// 					<Redirect to='/login' />
+// 				)
+// 			}
+// 		/>
+// 	)
+// }
 
 const App = () => {
+	const recipe = useSelector(state => state.recipe.currentRecipe.currentRecipe)
 	return (
-		<Provider store={store}>
-			<BrowserRouter>
-				<ThemeProvider theme={theme}>
-					<>
-						<AppBackground>
-							<AppWrapper>
-								<Navbar />
-								<Switch>
-									<Route exact path='/' component={List} />
-									<Route exact path='/recipe/:id' component={RecipePage} />
-									<Route exact path='/create' component={Create} />
-									<Route exact path='/edit' component={Edit} />
-								</Switch>
-							</AppWrapper>
-						</AppBackground>
-						<GlobalStyles />
-					</>
-				</ThemeProvider>
-			</BrowserRouter>
-		</Provider>
+		<BrowserRouter>
+			<ThemeProvider theme={theme}>
+				<>
+					<AppBackground>
+						<AppWrapper>
+							<Navbar />
+							<Switch>
+								<Route exact path='/' component={List} />
+								<Route exact path='/create' component={Create} />
+								{recipe && <Route exact path='/edit' component={Edit} />}
+								<Route exact path='/recipe/:id' component={RecipePage} />
+								<Redirect to='/' />
+							</Switch>
+						</AppWrapper>
+					</AppBackground>
+					<GlobalStyles />
+				</>
+			</ThemeProvider>
+		</BrowserRouter>
 	)
 }
 

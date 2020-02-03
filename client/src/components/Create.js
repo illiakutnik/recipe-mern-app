@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { createRecipe } from '../actions/recipe'
 import styled from 'styled-components'
-
+import timeFormatter from '../utils/timeFormatter'
 import { RemoveCircleOutline } from 'styled-icons/material/RemoveCircleOutline'
 
 const Wrapper = styled.div`
@@ -70,7 +70,7 @@ const RemoveButton = styled(RemoveCircleOutline)`
 	cursor: pointer;
 `
 
-const Create = ({ createRecipe }) => {
+const Create = ({ createRecipe, error }) => {
 	const [name, setName] = useState('')
 	const [description, setDescription] = useState('')
 	const [image, setImage] = useState(null)
@@ -112,31 +112,38 @@ const Create = ({ createRecipe }) => {
 		setSteps(newSteps)
 	}
 
-	const timeFormat = min => {
-		let hours = Math.floor(min / 60)
-		let minutes = min % 60
-		if (minutes === 0) minutes = '00'
-		return !hours ? `${minutes}m` : `${hours}h:${minutes}m`
-	}
+	// const timeFormat = min => {
+	// 	let hours = Math.floor(min / 60)
+	// 	let minutes = min % 60
+	// 	if (minutes === 0) minutes = '00'
+	// 	return !hours ? `${minutes}m` : `${hours}h:${minutes}m`
+	// }
 
 	const handleSubmit = async e => {
 		e.preventDefault()
 		setIsSubmitting(true)
-		let newRecipe = new FormData()
-		newRecipe.append('name', name)
-		newRecipe.append('description', description)
-		newRecipe.append('image', image)
-		newRecipe.append('servings', servings)
-		newRecipe.append('time', timeFormat(time))
-		newRecipe.append(
-			'ingredients',
-			ingredients.map(i => i.trim()).filter(i => i)
-		)
-		newRecipe.append(
-			'preparation',
-			steps.map(i => i.trim()).filter(i => i)
-		)
+		const newRecipe = {
+			name,
+			description,
+			image,
+			servings,
+			time,
+			ingredients,
+			steps
+		}
+
 		await createRecipe(newRecipe)
+
+		if (!error) {
+			setName('')
+			setDescription('')
+			setImage(null)
+			setServings(1)
+			setTime(10)
+			setIngredients([])
+			setSteps([])
+		}
+
 		setIsSubmitting(false)
 	}
 
@@ -180,7 +187,7 @@ const Create = ({ createRecipe }) => {
 					onChange={e => setServings(e.target.value)}
 				/>
 				<Label>Time</Label>
-				<span>{timeFormat(time)}</span>
+				<span>{timeFormatter(time)}</span>
 				<Range
 					type='range'
 					step='10'
@@ -239,4 +246,8 @@ const Create = ({ createRecipe }) => {
 	)
 }
 
-export default connect(null, { createRecipe })(Create)
+const mapStateToProps = state => ({
+	error: state.recipe.error
+})
+
+export default connect(mapStateToProps, { createRecipe })(Create)

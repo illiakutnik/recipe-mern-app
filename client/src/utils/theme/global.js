@@ -19,8 +19,10 @@ export default createGlobalStyle`
     /* font-size: 62.5%; */
     box-sizing: border-box;
     --main: ${props => props.theme.colors.main};
+    --mainDeep: ${props => props.theme.colors.mainDeep};
     --whitesmoke: ${props => props.theme.colors.whitesmoke};
     --shadow: ${props => props.theme.colors.shadow};
+    --red: ${props => props.theme.colors.red};
     --smallShadow: ${props => props.theme.colors.smallShadow}
   }
   body {

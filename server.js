@@ -62,9 +62,20 @@ app.post('/new', upload.single('image'), async (req, res) => {
 })
 
 app.get('/all', async (req, res) => {
+	let skip = req.query.page * 6 - 6
 	try {
 		let recipes = await Recipe.find()
-		res.json(recipes)
+			.sort({ _id: -1 })
+			.skip(skip)
+			.limit(6)
+		let totalCount = await Recipe.countDocuments({}, function(count) {
+			return count
+		})
+		let data = {
+			recipes,
+			totalCount
+		}
+		res.json(data)
 	} catch (err) {
 		console.error(err.message)
 		res.status(500).send('Server Error')
@@ -84,7 +95,7 @@ app.get('/recipe', async (req, res) => {
 	}
 })
 
-app.post('/edit', async (req, res) => {
+app.post('/edit', upload.single('image'), async (req, res) => {
 	let id = req.query.id
 	const {
 		name,
@@ -94,11 +105,13 @@ app.post('/edit', async (req, res) => {
 		ingredients,
 		preparation
 	} = req.body
+	const image = req.file ? req.file.path : ''
 	let recipeFields = {}
 	if (name) recipeFields.name = name
 	if (description) recipeFields.description = description
 	if (servings) recipeFields.servings = servings
 	if (time) recipeFields.time = time
+	if (image) recipeFields.image = image
 	if (ingredients) recipeFields.ingredients = ingredients
 	if (preparation) recipeFields.preparation = preparation
 	recipeFields.updated = Date.now()
