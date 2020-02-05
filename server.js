@@ -86,7 +86,6 @@ app.get('/recipe', async (req, res) => {
 	let id = req.query.id
 	try {
 		let recipe = await Recipe.findById(id)
-		console.log(recipe)
 		if (!recipe)
 			return res.status(400).json({ message: "Recipe doesn't exist" })
 		res.json(recipe)
