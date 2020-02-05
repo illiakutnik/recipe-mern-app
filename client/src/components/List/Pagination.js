@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 const PaginationWrapper = styled.div`
+	align-self: flex-end;
 	display: flex;
 	justify-content: center;
 	margin: 25;

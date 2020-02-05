@@ -118,7 +118,7 @@ export const deleteRecipe = id => async dispatch => {
 		dispatch({
 			type: DELETE_RECIPE
 		})
-		history.push('/some')
+		history.push('/')
 	} catch (err) {
 		dispatch({
 			type: DELETE_RECIPE_FAIL,
