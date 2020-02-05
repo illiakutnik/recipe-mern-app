@@ -1,4 +1,5 @@
 import axios from 'axios'
+import history from '../utils/history'
 import {
 	LOADING,
 	CLEAN_STORE,
@@ -34,9 +35,9 @@ export const createRecipe = data => async dispatch => {
 		'preparation',
 		JSON.stringify(steps.map(i => i.trim()).filter(i => i))
 	)
-	// dispatch({ type: LOADING })
+	dispatch({ type: LOADING })
 	try {
-		const res = await axios.post('/new', newRecipe)
+		await axios.post('/new', newRecipe)
 		dispatch({
 			type: CREATE_RECIPE
 		})
@@ -75,7 +76,8 @@ export const getRecipe = id => async dispatch => {
 	} catch (err) {
 		dispatch({
 			type: GET_RECIPE_FAIL,
-			payload: err.message
+			payload:
+				err.response.status === 400 ? err.response.data.message : err.message
 		})
 	}
 }
@@ -98,7 +100,7 @@ export const editRecipe = (id, data) => async dispatch => {
 	)
 	dispatch({ type: LOADING })
 	try {
-		const res = await axios.post(`/edit/?id=${id}`, newRecipe)
+		await axios.post(`/edit/?id=${id}`, newRecipe)
 		dispatch({
 			type: EDIT_RECIPE
 		})
@@ -116,6 +118,7 @@ export const deleteRecipe = id => async dispatch => {
 		dispatch({
 			type: DELETE_RECIPE
 		})
+		history.push('/some')
 	} catch (err) {
 		dispatch({
 			type: DELETE_RECIPE_FAIL,

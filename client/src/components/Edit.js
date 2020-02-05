@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import styled from 'styled-components'
 import { editRecipe } from '../actions/recipe'
-import { Redirect } from 'react-router-dom'
 import { RemoveCircleOutline } from 'styled-icons/material/RemoveCircleOutline'
 
 const Wrapper = styled.div`
@@ -69,30 +68,36 @@ const RemoveButton = styled(RemoveCircleOutline)`
 	width: 35px;
 	cursor: pointer;
 `
+const ErrorSuccess = styled.p`
+	font-weight: 700;
+	color: ${({ status }) => (status === 'error' ? 'red' : 'green')};
+	text-align: center;
+	padding: 10px 0 30px 0;
+`
 
-const Edit = ({ recipe, location, history, error, editRecipe }) => {
+const Edit = ({ recipe, error, editRecipe }) => {
 	const [name, setName] = useState(recipe.name)
 	const [description, setDescription] = useState(recipe.description)
 	const [image, setImage] = useState(recipe.image)
 	const [servings, setServings] = useState(recipe.servings)
-	const [time, setTime] = useState(10)
+	const [time, setTime] = useState(recipe.time)
 	const [ingredients, setIngredients] = useState(JSON.parse(recipe.ingredients))
 	const [steps, setSteps] = useState(JSON.parse(recipe.preparation))
 	const [isSubmitting, setIsSubmitting] = useState(false)
 
-	// useEffect(() => {
-	// 	// console.log(location.pathname.slice(6))
-	// 	// getRecipe(location.pathname.slice(6))
-	// 	// return () => {
-	// 	// 	history.push(`/${recipe._id}`)
-	// 	// }
-	// }, [])
-
-	const isChanged = () => {
-		if (name !== recipe.name) {
-			return true
+	const notChanged = () => {
+		if (
+			name !== recipe.name ||
+			description !== recipe.description ||
+			image !== recipe.image ||
+			servings !== recipe.servings ||
+			time !== recipe.time ||
+			ingredients !== recipe.ingredients ||
+			steps !== recipe.preparation
+		) {
+			return false
 		}
-		return false
+		return true
 	}
 
 	const addIngredient = () => {
@@ -146,115 +151,115 @@ const Edit = ({ recipe, location, history, error, editRecipe }) => {
 			ingredients,
 			steps
 		}
-		await editRecipe(location.pathname.slice(6), ChangedRecipe)
 
-		// if (!error) {
-		// 	setName('')
-		// 	setDescription('')
-		// 	setImage(null)
-		// 	setServings(1)
-		// 	setTime(10)
-		// 	setIngredients([])
-		// 	setSteps([])
-		// }
+		await editRecipe(recipe._id, ChangedRecipe)
+
 		setIsSubmitting(false)
 	}
 	return (
-		<Wrapper>
-			<h1>EditRecipe</h1>
-			<Form onSubmit={handleSubmit}>
-				<Label>Name of your recipe</Label>
-				<TextInput
-					type='text'
-					name='name'
-					placeholder='Name'
-					value={name}
-					onChange={e => setName(e.target.value)}
-					required
-				/>
-				<Label>Short description of your recipe</Label>
-				<DescriptionInput
-					type='text'
-					placeholder='Description'
-					value={description}
-					onChange={e => setDescription(e.target.value)}
-					required
-				/>
-				<Label>Photo</Label>
-				<PhotoPickButton htmlFor='file-upload'>Choose photo</PhotoPickButton>
-				<p>{image ? image.name : null}</p>
-				<input
-					type='file'
-					style={{ display: 'none' }}
-					id='file-upload'
-					onChange={e => setImage(e.target.files[0])}
-				/>
-				<Label>Servings</Label>
-				<span>{servings}</span>
-				<Range
-					type='range'
-					min='0'
-					max='10'
-					value={servings}
-					onChange={e => setServings(e.target.value)}
-				/>
-				<Label>Time</Label>
-				<span>{timeFormat(time)}</span>
-				<Range
-					type='range'
-					step='10'
-					min='0'
-					max='360'
-					value={time}
-					onChange={e => setTime(e.target.value)}
-				/>
-				<Label>Ingredients</Label>
-				{ingredients.map((ingredient, index) => {
-					return (
-						<ListContainer key={index}>
-							<h3>{index + 1})</h3>
-							<TextInput
-								style={{ margin: '0 10px' }}
-								type='text'
-								value={ingredient}
-								onChange={e => handleChangeIngredient(e.target.value, index)}
-							/>
-							<RemoveButton
-								onClick={() => handleRemoveIngredient(index)}
-								type='button'
-							></RemoveButton>
-						</ListContainer>
-					)
-				})}
-				<Button type='button' onClick={addIngredient}>
-					Add another ingredient
-				</Button>
-				<Label>Preparation steps</Label>
-				{steps.map((step, index) => {
-					return (
-						<ListContainer key={index}>
-							<h3>{`Step: ${index + 1}`}</h3>
-							<DescriptionInput
-								type='text'
-								style={{ margin: '0 10px', width: '70%' }}
-								value={step}
-								onChange={e => handleChangeStep(e.target.value, index)}
-							/>
-							<RemoveButton
-								onClick={() => handleRemoveStep(index)}
-								type='button'
-							></RemoveButton>
-						</ListContainer>
-					)
-				})}
-				<Button type='button' onClick={addStep}>
-					Add another step
-				</Button>
-				<SubmitButton type='submit' disabled={isSubmitting}>
-					{isSubmitting ? 'Editing...' : 'Edit recipe'}
-				</SubmitButton>
-			</Form>
-		</Wrapper>
+		<>
+			<Wrapper>
+				<h1>EditRecipe</h1>
+				<Form onSubmit={handleSubmit}>
+					<Label>Name of your recipe</Label>
+					<TextInput
+						type='text'
+						name='name'
+						placeholder='Name'
+						value={name}
+						onChange={e => setName(e.target.value)}
+						required
+					/>
+					<Label>Short description of your recipe</Label>
+					<DescriptionInput
+						type='text'
+						placeholder='Description'
+						value={description}
+						onChange={e => setDescription(e.target.value)}
+						required
+					/>
+					<Label>Photo</Label>
+					<PhotoPickButton htmlFor='file-upload'>Choose photo</PhotoPickButton>
+					<p>{image ? image.name : null}</p>
+					<input
+						type='file'
+						style={{ display: 'none' }}
+						id='file-upload'
+						onChange={e => setImage(e.target.files[0])}
+					/>
+					<Label>Servings</Label>
+					<span>{servings}</span>
+					<Range
+						type='range'
+						min='0'
+						max='10'
+						value={servings}
+						onChange={e => setServings(e.target.value)}
+					/>
+					<Label>Time</Label>
+					<span>{timeFormat(time)}</span>
+					<Range
+						type='range'
+						step='10'
+						min='0'
+						max='360'
+						value={time}
+						onChange={e => setTime(e.target.value)}
+					/>
+					<Label>Ingredients</Label>
+					{ingredients.map((ingredient, index) => {
+						return (
+							<ListContainer key={index}>
+								<h3>{index + 1})</h3>
+								<TextInput
+									style={{ margin: '0 10px' }}
+									type='text'
+									value={ingredient}
+									onChange={e => handleChangeIngredient(e.target.value, index)}
+								/>
+								<RemoveButton
+									onClick={() => handleRemoveIngredient(index)}
+									type='button'
+								></RemoveButton>
+							</ListContainer>
+						)
+					})}
+					<Button type='button' onClick={addIngredient}>
+						Add another ingredient
+					</Button>
+					<Label>Preparation steps</Label>
+					{steps.map((step, index) => {
+						return (
+							<ListContainer key={index}>
+								<h3>{`Step: ${index + 1}`}</h3>
+								<DescriptionInput
+									type='text'
+									style={{ margin: '0 10px', width: '70%' }}
+									value={step}
+									onChange={e => handleChangeStep(e.target.value, index)}
+								/>
+								<RemoveButton
+									onClick={() => handleRemoveStep(index)}
+									type='button'
+								></RemoveButton>
+							</ListContainer>
+						)
+					})}
+					<Button type='button' onClick={addStep}>
+						Add another step
+					</Button>
+					<SubmitButton type='submit' disabled={isSubmitting || notChanged()}>
+						{isSubmitting ? 'Editing...' : 'Edit recipe'}
+					</SubmitButton>
+				</Form>
+			</Wrapper>
+			{error ? <ErrorSuccess status='error'>{error}</ErrorSuccess> : null}
+			{error === false ? (
+				<ErrorSuccess status='success'>
+					Recipe was edited successfully
+				</ErrorSuccess>
+			) : null}
+		</>
 	)
 }
 

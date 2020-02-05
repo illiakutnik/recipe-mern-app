@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom'
 import { Time } from 'styled-icons/boxicons-regular/Time'
 import { Dish } from 'styled-icons/boxicons-regular/Dish'
 import DeleteModal from './DeleteModel'
+import Loader from '../Loader'
 
 const Wrapper = styled.div`
 	padding: 20px;
@@ -118,42 +119,37 @@ const EditBtn = styled(Link)`
 		transform: scale(1.05);
 	}
 `
+const ErrorMsg = styled.p`
+	margin-top: 25%;
+	font-weight: 700;
+	font-size: 26px;
+	color: red;
+	text-align: center;
+	padding: 10px 0 30px 0;
+`
 
 const RecipePage = ({
 	location,
 	getRecipe,
-	deleteRecipe,
 	isLoaded,
-	cleanStore,
+	error,
+	loading,
 	recipe
 }) => {
 	const ID = location.pathname.slice(8)
-	console.log(ID)
+
 	useEffect(() => {
 		getRecipe(ID)
-		// return () => {
-		// 	cleanStore()
-		// }
 	}, [])
 
-	// const timeM = () => {
-	// 	let time = recipe.time
-	// 	let x = time.split('h:')
-	// 	let minutes = Mumber(x[0] * 60)
-	// 	// let result = (x[0] * 60)
-	// 	console.log(minutes)
-	// }
-
 	const [modal, setModal] = useState(false)
-
-	// const deleteHandler = () => {
-	// 	deleteRecipe(ID)
-	// }
 
 	return (
 		<>
 			{!isLoaded ? (
-				<h2>Loading...</h2>
+				loading ? (
+					<Loader />
+				) : null
 			) : (
 				<>
 					<Wrapper>
@@ -198,6 +194,7 @@ const RecipePage = ({
 					) : null}
 				</>
 			)}
+			{error ? <ErrorMsg>{error}</ErrorMsg> : null}
 		</>
 	)
 }
@@ -205,6 +202,7 @@ const RecipePage = ({
 const mapStateToProps = state => ({
 	recipe: state.recipe.currentRecipe.currentRecipe,
 	isLoaded: state.recipe.currentRecipe.isLoaded,
+	loading: state.recipe.loading,
 	error: state.recipe.error
 })
 

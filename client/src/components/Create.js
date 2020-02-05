@@ -69,8 +69,14 @@ const RemoveButton = styled(RemoveCircleOutline)`
 	width: 35px;
 	cursor: pointer;
 `
+const ErrorSuccess = styled.p`
+	font-weight: 700;
+	color: ${({ status }) => (status === 'error' ? 'red' : 'green')};
+	text-align: center;
+	padding: 10px 0 30px 0;
+`
 
-const Create = ({ createRecipe, error }) => {
+const Create = ({ createRecipe, error, loading }) => {
 	const [name, setName] = useState('')
 	const [description, setDescription] = useState('')
 	const [image, setImage] = useState(null)
@@ -78,7 +84,6 @@ const Create = ({ createRecipe, error }) => {
 	const [time, setTime] = useState(10)
 	const [ingredients, setIngredients] = useState([])
 	const [steps, setSteps] = useState([])
-	const [isSubmitting, setIsSubmitting] = useState(false)
 
 	const addIngredient = () => {
 		setIngredients([...ingredients, ''])
@@ -112,16 +117,8 @@ const Create = ({ createRecipe, error }) => {
 		setSteps(newSteps)
 	}
 
-	// const timeFormat = min => {
-	// 	let hours = Math.floor(min / 60)
-	// 	let minutes = min % 60
-	// 	if (minutes === 0) minutes = '00'
-	// 	return !hours ? `${minutes}m` : `${hours}h:${minutes}m`
-	// }
-
 	const handleSubmit = async e => {
 		e.preventDefault()
-		setIsSubmitting(true)
 		const newRecipe = {
 			name,
 			description,
@@ -134,7 +131,7 @@ const Create = ({ createRecipe, error }) => {
 
 		await createRecipe(newRecipe)
 
-		if (!error) {
+		if (!loading && !error) {
 			setName('')
 			setDescription('')
 			setImage(null)
@@ -143,110 +140,117 @@ const Create = ({ createRecipe, error }) => {
 			setIngredients([])
 			setSteps([])
 		}
-
-		setIsSubmitting(false)
 	}
 
 	return (
-		<Wrapper>
-			<h1>Create New Recipe</h1>
-			<Form onSubmit={handleSubmit}>
-				<Label>Name of your recipe</Label>
-				<TextInput
-					type='text'
-					name='name'
-					placeholder='Name'
-					value={name}
-					onChange={e => setName(e.target.value)}
-					required
-				/>
-				<Label>Short description of your recipe</Label>
-				<DescriptionInput
-					type='text'
-					placeholder='Description'
-					value={description}
-					onChange={e => setDescription(e.target.value)}
-					required
-				/>
-				<Label>Photo</Label>
-				<PhotoPickButton htmlFor='file-upload'>Choose photo</PhotoPickButton>
-				<p>{image ? image.name : null}</p>
-				<input
-					type='file'
-					style={{ display: 'none' }}
-					id='file-upload'
-					onChange={e => setImage(e.target.files[0])}
-				/>
-				<Label>Servings</Label>
-				<span>{servings}</span>
-				<Range
-					type='range'
-					min='0'
-					max='10'
-					value={servings}
-					onChange={e => setServings(e.target.value)}
-				/>
-				<Label>Time</Label>
-				<span>{timeFormatter(time)}</span>
-				<Range
-					type='range'
-					step='10'
-					min='0'
-					max='360'
-					value={time}
-					onChange={e => setTime(e.target.value)}
-				/>
-				<Label>Ingredients</Label>
-				{ingredients.map((ingredient, index) => {
-					return (
-						<ListContainer key={index}>
-							<h3>{index + 1})</h3>
-							<TextInput
-								style={{ margin: '0 10px' }}
-								type='text'
-								value={ingredient}
-								onChange={e => handleChangeIngredient(e.target.value, index)}
-							/>
-							<RemoveButton
-								onClick={() => handleRemoveIngredient(index)}
-								type='button'
-							></RemoveButton>
-						</ListContainer>
-					)
-				})}
-				<Button type='button' onClick={addIngredient}>
-					Add another ingredient
-				</Button>
-				<Label>Preparation steps</Label>
-				{steps.map((step, index) => {
-					return (
-						<ListContainer key={index}>
-							<h3>{`Step: ${index + 1}`}</h3>
-							<DescriptionInput
-								type='text'
-								style={{ margin: '0 10px', width: '70%' }}
-								value={step}
-								onChange={e => handleChangeStep(e.target.value, index)}
-							/>
-							<RemoveButton
-								onClick={() => handleRemoveStep(index)}
-								type='button'
-							></RemoveButton>
-						</ListContainer>
-					)
-				})}
-				<Button type='button' onClick={addStep}>
-					Add another step
-				</Button>
-				<SubmitButton type='submit' disabled={isSubmitting}>
-					{isSubmitting ? 'Saving...' : 'Save new recipe'}
-				</SubmitButton>
-			</Form>
-		</Wrapper>
+		<>
+			<Wrapper>
+				<h1>Create New Recipe</h1>
+				<Form onSubmit={handleSubmit}>
+					<Label>Name of your recipe</Label>
+					<TextInput
+						type='text'
+						name='name'
+						placeholder='Name'
+						value={name}
+						onChange={e => setName(e.target.value)}
+						required
+					/>
+					<Label>Short description of your recipe</Label>
+					<DescriptionInput
+						type='text'
+						placeholder='Description'
+						value={description}
+						onChange={e => setDescription(e.target.value)}
+						required
+					/>
+					<Label>Photo</Label>
+					<PhotoPickButton htmlFor='file-upload'>Choose photo</PhotoPickButton>
+					<p>{image ? image.name : null}</p>
+					<input
+						type='file'
+						style={{ display: 'none' }}
+						id='file-upload'
+						onChange={e => setImage(e.target.files[0])}
+					/>
+					<Label>Servings</Label>
+					<span>{servings}</span>
+					<Range
+						type='range'
+						min='0'
+						max='10'
+						value={servings}
+						onChange={e => setServings(e.target.value)}
+					/>
+					<Label>Time</Label>
+					<span>{timeFormatter(time)}</span>
+					<Range
+						type='range'
+						step='10'
+						min='0'
+						max='360'
+						value={time}
+						onChange={e => setTime(e.target.value)}
+					/>
+					<Label>Ingredients</Label>
+					{ingredients.map((ingredient, index) => {
+						return (
+							<ListContainer key={index}>
+								<h3>{index + 1})</h3>
+								<TextInput
+									style={{ margin: '0 10px' }}
+									type='text'
+									value={ingredient}
+									onChange={e => handleChangeIngredient(e.target.value, index)}
+								/>
+								<RemoveButton
+									onClick={() => handleRemoveIngredient(index)}
+									type='button'
+								></RemoveButton>
+							</ListContainer>
+						)
+					})}
+					<Button type='button' onClick={addIngredient}>
+						Add another ingredient
+					</Button>
+					<Label>Preparation steps</Label>
+					{steps.map((step, index) => {
+						return (
+							<ListContainer key={index}>
+								<h3>{`Step: ${index + 1}`}</h3>
+								<DescriptionInput
+									type='text'
+									style={{ margin: '0 10px', width: '70%' }}
+									value={step}
+									onChange={e => handleChangeStep(e.target.value, index)}
+								/>
+								<RemoveButton
+									onClick={() => handleRemoveStep(index)}
+									type='button'
+								></RemoveButton>
+							</ListContainer>
+						)
+					})}
+					<Button type='button' onClick={addStep}>
+						Add another step
+					</Button>
+					<SubmitButton type='submit' disabled={loading}>
+						{loading ? 'Saving...' : 'Save new recipe'}
+					</SubmitButton>
+				</Form>
+			</Wrapper>
+			{error ? <ErrorSuccess status='error'>{error}</ErrorSuccess> : null}
+			{error === false ? (
+				<ErrorSuccess status='success'>
+					New recipe was created successfully
+				</ErrorSuccess>
+			) : null}
+		</>
 	)
 }
 
 const mapStateToProps = state => ({
+	loading: state.recipe.loading,
 	error: state.recipe.error
 })
 

@@ -62,7 +62,11 @@ const DeleteBtn = styled(Button)`
 `
 
 const Modal = ({ close, deleteRecipe, id }) => {
-	console.log(id)
+	const onClick = () => {
+		deleteRecipe(id)
+		close()
+	}
+
 	return ReactDOM.createPortal(
 		<>
 			<BackDrop />
@@ -70,7 +74,7 @@ const Modal = ({ close, deleteRecipe, id }) => {
 				<InnerWrapper>
 					<h2>Are you sure you wanna delete this recipe?</h2>
 					<BtnWrapper>
-						<DeleteBtn onClick={() => deleteRecipe(id)}>Delete</DeleteBtn>
+						<DeleteBtn onClick={onClick}>Delete</DeleteBtn>
 						<CancelBtn onClick={close}>Cancel</CancelBtn>
 					</BtnWrapper>
 				</InnerWrapper>

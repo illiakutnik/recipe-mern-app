@@ -38,6 +38,10 @@ export default createGlobalStyle`
     text-decoration: none;
     font-family: inherit;
   }
+  button:disabled {
+  cursor: not-allowed;
+  pointer-events: all !important;
+}
   ul {
     list-style: none
   }

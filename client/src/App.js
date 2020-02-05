@@ -23,28 +23,13 @@ const AppBackground = styled.div`
 const AppWrapper = styled.div`
 	background-color: white;
 	max-width: 1000px;
+	min-height: 80vh;
 	margin: 0 auto;
 	margin-top: 100px;
 	margin-bottom: 50px;
 	box-shadow: var(--shadow);
 	border-radius: 20px;
 `
-// const ProtectedRoute = () => {
-// 	const { component: Component, ...props } = props
-
-// 	return (
-// 		<Route
-// 			{...props}
-// 			render={props =>
-// 				this.state.authenticated ? (
-// 					<Component {...props} />
-// 				) : (
-// 					<Redirect to='/login' />
-// 				)
-// 			}
-// 		/>
-// 	)
-// }
 
 const App = () => {
 	const recipe = useSelector(state => state.recipe.currentRecipe.currentRecipe)

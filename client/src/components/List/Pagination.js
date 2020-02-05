@@ -31,7 +31,7 @@ const Pagination = ({ recipesCount, changePage, currentPage }) => {
 			<Button
 				key={i}
 				onClick={() => changePage(i + 1)}
-				currentPage={i + 1 == currentPage}
+				currentPage={i + 1 === currentPage}
 			>
 				{i + 1}
 			</Button>
